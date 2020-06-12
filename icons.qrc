@@ -1,0 +1,31 @@
+<RCC>
+    <qresource prefix="/icons">
+        <file>icons/add.png</file>
+        <file>icons/addIcon.png</file>
+        <file>icons/appIcon.png</file>
+        <file>icons/check-box.png</file>
+        <file>icons/circle.png</file>
+        <file>icons/delete.png</file>
+        <file>icons/deleteIcon.png</file>
+        <file>icons/edit.png</file>
+        <file>icons/editIcon.png</file>
+        <file>icons/female.png</file>
+        <file>icons/info.png</file>
+        <file>icons/line.png</file>
+        <file>icons/male.png</file>
+        <file>icons/pdf.png</file>
+        <file>icons/pencil.png</file>
+        <file>icons/rectangle.png</file>
+        <file>icons/redo.png</file>
+        <file>icons/saveIcon.png</file>
+        <file>icons/saveToPDF.png</file>
+        <file>icons/search.png</file>
+        <file>icons/searchCancelIcon.png</file>
+        <file>icons/SearchIcon.png</file>
+        <file>icons/SG_Logo.jpg</file>
+        <file>icons/uncheck-box.png</file>
+        <file>icons/undo.png</file>
+        <file>icons/undoIcon.png</file>
+        <file>icons/eraser.png</file>
+    </qresource>
+</RCC>
