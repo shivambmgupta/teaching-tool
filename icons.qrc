@@ -28,4 +28,5 @@
         <file>icons/undoIcon.png</file>
         <file>icons/eraser.png</file>
     </qresource>
+    <qresource prefix="/"/>
 </RCC>
