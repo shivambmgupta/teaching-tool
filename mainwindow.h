@@ -20,6 +20,12 @@ public:
     void mouseMoveEvent(QMouseEvent *event);
     void keyPressEvent(QKeyEvent *keyevent);
 
+    void selectShapeEvent(TMShape *shape);
+    void deselectShapeEvent();
+    void removeSelectedShapeEvent();
+    void addShapeEvent(TMShape *shape);
+    void shapeRemovedEvent();
+
 private slots:
     void on_clear_clicked();
     void on_lineButton_clicked();
@@ -40,8 +46,8 @@ private:
 
     TMShape * selectedShape = nullptr;
     TMShape * toPaste = nullptr;
-    bool isPressedToSelect = false;
     QPoint clickedPoint;
+    bool hasDragged = false;
 
     int FREE_HAND_MODE  = 0;
     int LINE_MODE       = 1;
@@ -49,11 +55,11 @@ private:
     int CIRCLE_MODE     = 3;
 
     int curr_mode       = 0;
-    bool pressed = false;
 
     void styleElements();
     bool isPointInFrame(QPoint point);
     bool isPointInFrame(int x, int y);
     void addToolTips();
+    void configureButtons();
 };
 #endif // MAINWINDOW_H

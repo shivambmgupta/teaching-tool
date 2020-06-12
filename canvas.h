@@ -25,10 +25,12 @@ public:
     void setDsFrame(QListWidget *value);
     void selectChild(int);
     bool hasSelectedChild();
+    void getShapeDrawn(TMShape *);
 
 private:
     Ui::Canvas *ui;
     QListWidget *dsFrame;
+    TMShape *drawOnly;
 
 };
 

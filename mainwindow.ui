@@ -61,7 +61,16 @@
       <item>
        <widget class="QPushButton" name="freeHandButton">
         <property name="styleSheet">
-         <string notr="true">background-color: rgb(85, 255, 255);</string>
+         <string notr="true">QPushButton{
+   background-color: rgb(85, 255, 255);
+   color: #ffffff;
+ 
+}
+
+QPushButton:hover:!pressed {
+    background-color: rgb(85, 170, 255);
+    color: #ffffff;
+}</string>
         </property>
         <property name="text">
          <string/>
@@ -71,7 +80,16 @@
       <item>
        <widget class="QPushButton" name="lineButton">
         <property name="styleSheet">
-         <string notr="true">background-color: rgb(85, 255, 255);</string>
+         <string notr="true">QPushButton{
+   background-color: rgb(85, 255, 255);
+   color: #ffffff;
+ 
+}
+
+QPushButton:hover:!pressed {
+    background-color: rgb(85, 170, 255);
+    color: #ffffff;
+}</string>
         </property>
         <property name="text">
          <string/>
@@ -81,7 +99,16 @@
       <item>
        <widget class="QPushButton" name="circleButton">
         <property name="styleSheet">
-         <string notr="true">background-color: rgb(85, 255, 255);</string>
+         <string notr="true">QPushButton{
+   background-color: rgb(85, 255, 255);
+   color: #ffffff;
+ 
+}
+
+QPushButton:hover:!pressed {
+    background-color: rgb(85, 170, 255);
+    color: #ffffff;
+}</string>
         </property>
         <property name="text">
          <string/>
@@ -91,7 +118,16 @@
       <item>
        <widget class="QPushButton" name="rectangleButton">
         <property name="styleSheet">
-         <string notr="true">background-color: rgb(85, 255, 255);</string>
+         <string notr="true">QPushButton{
+   background-color: rgb(85, 255, 255);
+   color: #ffffff;
+ 
+}
+
+QPushButton:hover:!pressed {
+    background-color: rgb(85, 170, 255);
+    color: #ffffff;
+}</string>
         </property>
         <property name="text">
          <string/>
@@ -142,7 +178,7 @@
     <property name="frameShadow">
      <enum>QFrame::Raised</enum>
     </property>
-    <widget class="QWidget" name="layoutWidget">
+    <widget class="QWidget" name="layoutWidget1">
      <property name="geometry">
       <rect>
        <x>190</x>
@@ -151,7 +187,7 @@
        <height>51</height>
       </rect>
      </property>
-     <layout class="QHBoxLayout" name="horizontalLayout_2">
+     <layout class="QHBoxLayout" name="horizonalLayout">
       <item>
        <widget class="QLabel" name="label">
         <property name="font">
@@ -202,7 +238,7 @@ color: black;</string>
       </item>
      </layout>
     </widget>
-    <widget class="QWidget" name="layoutWidget">
+    <widget class="QWidget" name="layoutWidget2">
      <property name="geometry">
       <rect>
        <x>640</x>
@@ -211,7 +247,7 @@ color: black;</string>
        <height>51</height>
       </rect>
      </property>
-     <layout class="QHBoxLayout" name="horizontalLayout_3">
+     <layout class="QHBoxLayout" name="horizontalLayout_1">
       <item>
        <widget class="QLabel" name="label_2">
         <property name="font">
@@ -275,20 +311,47 @@ color: black;</string>
      </layout>
     </widget>
    </widget>
-   <widget class="QWidget" name="layoutWidget">
+   <widget class="QWidget" name="layoutWidget3">
     <property name="geometry">
      <rect>
       <x>1700</x>
-      <y>30</y>
+      <y>28</y>
       <width>151</width>
-      <height>49</height>
+      <height>51</height>
      </rect>
     </property>
     <layout class="QHBoxLayout" name="horizontalLayout">
      <item>
       <widget class="QPushButton" name="undoButton">
+       <property name="enabled">
+        <bool>true</bool>
+       </property>
+       <property name="minimumSize">
+        <size>
+         <width>0</width>
+         <height>21</height>
+        </size>
+       </property>
        <property name="styleSheet">
-        <string notr="true">background-color: rgb(255, 0, 0);</string>
+        <string notr="true">QPushButton{
+    background-color: rgb(0, 255, 127);
+    color: #ffffff;
+    font-family: arial;
+    font-weight: bold;
+    text-decoration: none;
+    outline: 0;
+}
+
+QPushButton:hover:!pressed {
+    background-color: rgb(0, 255, 0);
+    color: #ffffff;
+}
+
+QPushButton:disabled {
+    background-color: rgb(153, 153, 153);
+   color: #ffffff;
+}
+</string>
        </property>
        <property name="text">
         <string/>
@@ -298,7 +361,25 @@ color: black;</string>
      <item>
       <widget class="QPushButton" name="clearSelected">
        <property name="styleSheet">
-        <string notr="true">background-color: rgb(255, 0, 0);</string>
+        <string notr="true">QPushButton{
+    background-color: rgb(0, 255, 127);
+    color: #ffffff;
+    font-family: arial;
+    font-weight: bold;
+    text-decoration: none;
+    outline: 0;
+}
+
+QPushButton:hover:!pressed {
+    background-color: rgb(0, 255, 0);
+   color: #ffffff;
+}
+
+QPushButton:disabled {
+    background-color: rgb(153, 153, 153);
+   color: #ffffff;
+}
+</string>
        </property>
        <property name="text">
         <string/>
@@ -308,7 +389,25 @@ color: black;</string>
      <item>
       <widget class="QPushButton" name="clear">
        <property name="styleSheet">
-        <string notr="true">background-color: rgb(255, 0, 0);</string>
+        <string notr="true">QPushButton{
+    background-color: rgb(0, 255, 127);
+    color: #ffffff;
+    font-family: arial;
+    font-weight: bold;
+    text-decoration: none;
+    outline: 0;
+}
+
+QPushButton:hover:!pressed {
+    background-color: rgb(0, 255, 0);
+   color: #ffffff;
+}
+
+QPushButton:disabled {
+    background-color: rgb(153, 153, 153);
+   color: #ffffff;
+}
+</string>
        </property>
        <property name="text">
         <string/>

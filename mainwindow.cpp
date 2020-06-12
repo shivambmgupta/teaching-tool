@@ -12,6 +12,10 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
     styleElements();
+    addToolTips();
+    configureButtons();
+
+    this->ui->frame->setDsFrame(this->ui->dsList);
 }
 
 MainWindow::~MainWindow()
@@ -29,8 +33,11 @@ void MainWindow::styleElements()
     this->ui->frame->setStyleSheet(frameStyleSheet);
     this->ui->dsFrame->setStyleSheet(dsFrameStyleSheet);
 
-    this->ui->frame->setDsFrame(this->ui->dsList);
+}
 
+void MainWindow::configureButtons()
+{
+    //Setting up icons
     this->setWindowIcon(QIcon(":icons/icons/appIcon.png"));
     this->setWindowTitle("TMPainter");
     this->ui->freeHandButton->setIcon(QIcon(":icons/icons/pencil.png"));
@@ -41,10 +48,13 @@ void MainWindow::styleElements()
     this->ui->clearSelected->setIcon(QIcon(":/icons/icons/eraser.png"));
     this->ui->clear->setIcon(QIcon(":/icons/icons/searchCancelIcon.png"));
 
+
+    //Disabling buttons
     this->ui->clearSelected->setEnabled(false); // Remove button initially set disabled.
     this->ui->undoButton->setEnabled(false);
+    this->ui->clear->setEnabled(false);
 
-    addToolTips();
+
 }
 
 void MainWindow::addToolTips()
@@ -73,15 +83,12 @@ void MainWindow::mousePressEvent(QMouseEvent *event)
     TMShape *sShape = this->ui->frame->getSelectedChild(QPoint(x - xu, y - yu));
 
     if(sShape != nullptr) {
-        this->isPressedToSelect = true;
-        this->selectedShape = sShape;
-        this->ui->clearSelected->setEnabled(true);
+        this->selectShapeEvent(sShape);
         this->ui->frame->update();
+        return;
      }
     else {
-          this->ui->clearSelected->setEnabled(false);
-          isPressedToSelect = false;
-          selectedShape = nullptr;
+       this->deselectShapeEvent();
     }
 
     if(event->button() != Qt::LeftButton) return;
@@ -99,35 +106,34 @@ void MainWindow::mousePressEvent(QMouseEvent *event)
        line = new TMLine;
        line->setStart(p);
        line->setPen(pen);
-       pressed = true;
-       return;
     }
-    if(curr_mode == RECTANGLE_MODE) {
+
+    else if(curr_mode == RECTANGLE_MODE) {
        rectangle = new TMRectangle;
        rectangle->setLeftUpperX(p.x());
        rectangle->setLeftUpperY(p.y());
        rectangle->setPen(pen);
-       pressed = true;
-       return;
     }
-    if(curr_mode == FREE_HAND_MODE) {
+
+    else if(curr_mode == FREE_HAND_MODE) {
        freehand = new TMFreeHand;
        freehand->addPoint(QPoint(p));
        freehand->setPen(pen);
-       pressed = true;
-       return;
-     }
-     if(curr_mode == CIRCLE_MODE) {
-         circle = new TMCircle;
-         circle->setCenter(p);
-         circle->setPen(pen);
-         pressed = true;
-         return;
-     }
+    }
+
+    else if(curr_mode == CIRCLE_MODE) {
+       circle = new TMCircle;
+       circle->setCenter(p);
+       circle->setPen(pen);
+    }
+
+    this->hasDragged = false;
+
 }
 void MainWindow::mouseMoveEvent(QMouseEvent *event)
 {
-    if(!(event->buttons() & Qt::LeftButton && pressed && isPointInFrame(event->x(), event->y())))
+
+    if(!(event->buttons() & Qt::LeftButton && isPointInFrame(event->x(), event->y())))
         return;
 
     QPoint p(event->x() - ui->frame->geometry().left(),
@@ -135,51 +141,46 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event)
 
     if(selectedShape != nullptr) {
         selectedShape->moveShapeBy(p.x() - clickedPoint.x(), p.y() - clickedPoint.y());
-        this->ui->frame->update();
         this->clickedPoint = p;
+        this->ui->frame->update();
         return;
     }
 
-
     if(curr_mode == LINE_MODE) {
-       if(!(this->ui->frame->tmshapes.contains(line)))
-                this->ui->frame->tmshapes.push_back(line);
-        line->setEnd(p);
-    }
+       line->setEnd(p);
+       this->ui->frame->getShapeDrawn(line);
+     }
 
-    else if(curr_mode == RECTANGLE_MODE) {
-     if(!(this->ui->frame->tmshapes.contains(rectangle)))
-           this->ui->frame->tmshapes.push_back(rectangle);
+    else if(curr_mode == RECTANGLE_MODE) {     
 
-        int width = p.x() - rectangle->getLeftUpperX();
-        if(width < 0) width *= -1;
-        int height = p.y() - rectangle->getLeftUpperY();
-        if(height < 0) height *= -1;
+       int width = p.x() - rectangle->getLeftUpperX();
+       if(width < 0) width *= -1;
+       int height = p.y() - rectangle->getLeftUpperY();
+       if(height < 0) height *= -1;
 
-        rectangle->setWidth(width);
-        rectangle->setHeight(height);
+       rectangle->setWidth(width);
+       rectangle->setHeight(height);
+       this->ui->frame->getShapeDrawn(rectangle);
     }
 
     else if(curr_mode == FREE_HAND_MODE) {
-     if(!(this->ui->frame->tmshapes.contains(freehand)))
-           this->ui->frame->tmshapes.push_back(freehand);
-        freehand->addPoint(QPoint(p));
+       freehand->addPoint(QPoint(p));
+       this->ui->frame->getShapeDrawn(freehand);
     }
 
     else if (curr_mode == CIRCLE_MODE) {
-        if(!(this->ui->frame->tmshapes.contains(circle)))
-            this->ui->frame->tmshapes.push_back(circle);
-        float dist = sqrt(pow((circle->getCenter().x() - p.x()), 2)
+       float dist = sqrt(pow((circle->getCenter().x() - p.x()), 2)
                         + pow((circle->getCenter().y() - p.y()), 2));
-        circle->setRadius(dist);
+       circle->setRadius(dist);
+       this->ui->frame->getShapeDrawn(circle);
     }
 
-    if(this->ui->frame->tmshapes.size() != 0) this->ui->undoButton->setEnabled(true);
-    this->ui->frame->update();
+    this->clickedPoint = p;
+    this->hasDragged = true;
 }
 void MainWindow::mouseReleaseEvent(QMouseEvent *event)
 {
-    if(!(event->button() == Qt::LeftButton && pressed && isPointInFrame(event->x(), event->y())))
+    if(!(event->button() == Qt::LeftButton && isPointInFrame(event->x(), event->y())))
               return;
 
     QPoint p(event->x() - ui->frame->geometry().left(),
@@ -192,41 +193,41 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *event)
         return;
     }
 
-
-    if(curr_mode == LINE_MODE)
+    if(curr_mode == LINE_MODE && hasDragged) {
         line->setEnd(p);
+        this->addShapeEvent(line);
+    }
 
-    else if(curr_mode == RECTANGLE_MODE) {
+    else if(curr_mode == RECTANGLE_MODE && hasDragged) {
         int width = p.x() - rectangle->getLeftUpperX();
         if(width < 0) width *= -1;
         rectangle->setWidth(width);
         int height = p.y() - rectangle->getLeftUpperY();
         if(height < 0) height *= -1;
         rectangle->setHeight(height);
-    }
-    else if(curr_mode == FREE_HAND_MODE)
-         freehand->addPoint(QPoint(p));
 
-    else if(curr_mode == CIRCLE_MODE) {
+        this->ui->frame->tmshapes.push_back(rectangle);
+        this->addShapeEvent(line);
+    }
+
+    else if(curr_mode == FREE_HAND_MODE && hasDragged) {
+        freehand->addPoint(QPoint(p));
+        this->addShapeEvent(freehand);
+    }
+
+    else if(curr_mode == CIRCLE_MODE && hasDragged) {
         float dist = sqrt(pow((circle->getCenter().x() - p.x()), 2)
                         + pow((circle->getCenter().y() - p.y()), 2));
         circle->setRadius(dist);
+        this->addShapeEvent(circle);
     }
+
     this->ui->frame->update();
-    pressed = false;
+    this->clickedPoint = p;
+    this->hasDragged = false;
 }
 
-void MainWindow::on_clear_clicked()
-{
-    this->ui->frame->tmshapes.clear();
-    ui->frame->tmshapes.removeOne(selectedShape);
-    selectedShape = nullptr;
-    isPressedToSelect = false;
-    ui->clearSelected->setEnabled(false);
-    this->ui->undoButton->setEnabled(false);
-    if(this->ui->frame->tmshapes.size() == 0) this->ui->undoButton->setEnabled(false);
-    this->ui->frame->update();
-}
+
 bool MainWindow::isPointInFrame(QPoint point)
 {
     int x =  point.x();
@@ -241,6 +242,8 @@ bool MainWindow::isPointInFrame(int x, int y)
 {
     return isPointInFrame(QPoint(x, y));
 }
+
+
 void MainWindow::on_lineButton_clicked()
 {
     curr_mode = LINE_MODE;
@@ -261,14 +264,46 @@ void MainWindow::on_circleButton_clicked()
     curr_mode = CIRCLE_MODE;
 }
 
+
+void MainWindow::on_clear_clicked()
+{
+    this->ui->frame->tmshapes.clear();
+
+    /*
+     * The following line may not seem technically right,
+     * but it is logically right.
+     * It sets selected shape to nullptr,
+     * disables the all the buttons, because it
+     * satisfies the if condition.
+     */
+
+    this->removeSelectedShapeEvent();
+
+    this->ui->frame->update();
+}
+
 void MainWindow::on_clearSelected_clicked()
 {
-    ui->frame->tmshapes.removeOne(selectedShape);
-    ui->frame->update();
-    selectedShape = nullptr;
-    isPressedToSelect = false;
-    ui->clearSelected->setEnabled(false);
+    this->removeSelectedShapeEvent();
+    this->ui->frame->update();
 }
+
+void MainWindow::on_undoButton_clicked()
+{
+    int shapeCount = this->ui->frame->tmshapes.size();
+    if(shapeCount == 0) return;
+
+    TMShape *toRemove = this->ui->frame->tmshapes[shapeCount - 1]; //The last shape added
+    if(toRemove == selectedShape)
+        this->removeSelectedShapeEvent();
+    else {
+        this->ui->frame->tmshapes.pop_back();
+        shapeRemovedEvent();
+    }
+    this->ui->frame->update();
+}
+
+
 
 void MainWindow::on_dsList_itemClicked(QListWidgetItem *item)
 {
@@ -276,30 +311,23 @@ void MainWindow::on_dsList_itemClicked(QListWidgetItem *item)
     int rowToSelect = this->ui->dsList->row(item);
     rowToSelect =  N - rowToSelect;
     this->ui->frame->selectChild(rowToSelect);
-    selectedShape = ui->frame->tmshapes[rowToSelect];
-    isPressedToSelect = true;
-    this->ui->clearSelected->setEnabled(true);
+    this->selectShapeEvent(ui->frame->tmshapes[rowToSelect]);
     this->ui->frame->update();
 }
 
-void MainWindow::on_undoButton_clicked()
-{
-    if(this->ui->frame->tmshapes.size() == 0) return;
-    this->ui->frame->tmshapes.pop_back();
-    this->ui->frame->update();
-    if(this->ui->frame->tmshapes.size() == 0) this->ui->undoButton->setEnabled(false);
-}
 void MainWindow::keyPressEvent(QKeyEvent *keyevent)
 {
     if (keyevent->matches(QKeySequence::Copy)) {
-         //qDebug() << "Ctrl + c have been pressed";
         if(selectedShape != nullptr)
           this->toPaste = selectedShape;
     }
     else if (keyevent->matches(QKeySequence::Cut)) {
         if(selectedShape != nullptr) {
          this->toPaste = selectedShape;
-         this->ui->frame->tmshapes.removeOne(selectedShape);
+
+         //It is just same to remove the selected one.
+
+         this->removeSelectedShapeEvent();
         }
     }
     if (keyevent->matches(QKeySequence::Paste)) {
@@ -320,7 +348,7 @@ void MainWindow::keyPressEvent(QKeyEvent *keyevent)
                newShape->setPen(oldShape->getPen());
                newShape->setSelection(false);
 
-               this->ui->frame->tmshapes.push_back(newShape);
+               this->addShapeEvent(newShape);
 
             }else
             if(tmpShapeCode == 1) {
@@ -341,7 +369,7 @@ void MainWindow::keyPressEvent(QKeyEvent *keyevent)
                 newLine->setStart(QPoint(oldLineStartX + horizontalDiff, oldLineStartY + verticalDiff));
                 newLine->setEnd(QPoint(oldLineEndX + horizontalDiff, oldLineEndY + verticalDiff));
 
-                this->ui->frame->tmshapes.push_back(newLine);
+                this->addShapeEvent(newLine);
 
             }else
             if(tmpShapeCode == 2) {
@@ -355,7 +383,8 @@ void MainWindow::keyPressEvent(QKeyEvent *keyevent)
                 newShape->setSelection(false);
                 newShape->setLeftUpperX(clickedPoint.x() - width/2);
                 newShape->setLeftUpperY(clickedPoint.y() - height/2);
-                this->ui->frame->tmshapes.push_back(newShape);
+                this->addShapeEvent(newShape);
+
             }else
             if(tmpShapeCode == 3) {
                 TMCircle *oldCircle = (TMCircle*)toPaste;
@@ -364,10 +393,49 @@ void MainWindow::keyPressEvent(QKeyEvent *keyevent)
                 newCircle->setRadius(oldCircle->getRadius());
                 newCircle->setPen(oldCircle->getPen());
                 newCircle->setSelection(false);
-                this->ui->frame->tmshapes.push_back(newCircle);
+                this->addShapeEvent(newCircle);
             }
         }
 
     }
     this->ui->frame->update();
+}
+
+void MainWindow::selectShapeEvent(TMShape *shape)
+{
+    if(shape == nullptr) return;
+
+    this->selectedShape = shape;
+    this->ui->clearSelected->setEnabled(true);
+}
+
+void MainWindow::deselectShapeEvent()
+{
+    this->selectedShape = nullptr;
+    this->ui->clearSelected->setEnabled(false);
+}
+
+void MainWindow::removeSelectedShapeEvent()
+{
+    if(this->selectedShape != nullptr)
+        this->ui->frame->tmshapes.removeOne(selectedShape);
+
+    this->selectedShape = nullptr;
+    this->ui->clearSelected->setEnabled(false);
+    this->shapeRemovedEvent();
+}
+
+void MainWindow::addShapeEvent(TMShape *shape)
+{
+    this->ui->frame->tmshapes.push_back(shape);
+    this->ui->undoButton->setEnabled(true);
+    this->ui->clear->setEnabled(true);
+}
+
+void MainWindow::shapeRemovedEvent()
+{
+    if(this->ui->frame->tmshapes.isEmpty()) {
+        this->ui->undoButton->setEnabled(false);
+        this->ui->clear->setEnabled(false);
+    }
 }

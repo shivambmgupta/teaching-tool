@@ -7,6 +7,7 @@ Canvas::Canvas(QWidget *parent) :
     ui(new Ui::Canvas)
 {
     ui->setupUi(this);
+    this->drawOnly = nullptr;
 }
 
 Canvas::~Canvas()
@@ -17,10 +18,18 @@ void Canvas::paintEvent(QPaintEvent *event)
 {
   QFrame::paintEvent(event);
   QPainter painter(this);
+
   dsFrame->clear();
-  for (int i = tmshapes.size() - 1; i >= 0; --i) {
-      tmshapes[i]->draw(&painter, dsFrame);
+
+  if(drawOnly != nullptr) {
+    this->drawOnly->draw(&painter, dsFrame);
+    this->drawOnly = nullptr;
   }
+
+  for (int i = tmshapes.size() - 1; i >= 0; --i) {
+     tmshapes[i]->draw(&painter, dsFrame);
+  }
+
 }
 TMShape* Canvas::getSelectedChild(QPoint point)
 {
@@ -64,4 +73,10 @@ bool Canvas::hasSelectedChild()
     for(TMShape *shape : tmshapes)
         if(shape->isSelected()) return true;
     return false;
+}
+
+void Canvas::getShapeDrawn(TMShape *shape)
+{
+    this->drawOnly = shape;
+    this->update();
 }
