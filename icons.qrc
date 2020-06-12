@@ -27,6 +27,7 @@
         <file>icons/undo.png</file>
         <file>icons/undoIcon.png</file>
         <file>icons/eraser.png</file>
+        <file>icons/splashScreen.png</file>
     </qresource>
     <qresource prefix="/"/>
 </RCC>
