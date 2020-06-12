@@ -54,5 +54,6 @@ private:
     void styleElements();
     bool isPointInFrame(QPoint point);
     bool isPointInFrame(int x, int y);
+    void addToolTips();
 };
 #endif // MAINWINDOW_H

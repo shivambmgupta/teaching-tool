@@ -43,6 +43,19 @@ void MainWindow::styleElements()
 
     this->ui->clearSelected->setEnabled(false); // Remove button initially set disabled.
     this->ui->undoButton->setEnabled(false);
+
+    addToolTips();
+}
+
+void MainWindow::addToolTips()
+{
+    this->ui->lineButton->setToolTip("Line");
+    this->ui->freeHandButton->setToolTip("Pen");
+    this->ui->rectangleButton->setToolTip("Rectangle");
+    this->ui->circleButton->setToolTip("Circle");
+    this->ui->clear->setToolTip("Clear all");
+    this->ui->clearSelected->setToolTip("Clear selected");
+    this->ui->undoButton->setToolTip("undo");
 }
 
 void MainWindow::mousePressEvent(QMouseEvent *event)
