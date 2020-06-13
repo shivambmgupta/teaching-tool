@@ -21,6 +21,7 @@ SOURCES += \
     mainwindow.cpp \
     tmcircle.cpp \
     tmfreehand.cpp \
+    tmgroup.cpp \
     tmline.cpp \
     tmrectangle.cpp \
     tmshape.cpp
@@ -30,6 +31,7 @@ HEADERS += \
     mainwindow.h \
     tmcircle.h \
     tmfreehand.h \
+    tmgroup.h \
     tmline.h \
     tmrectangle.h \
     tmshape.h \

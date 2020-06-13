@@ -50,7 +50,27 @@ TMShape* Canvas::getSelectedChild(QPoint point)
   return shape;
 }
 
-QListWidget *Canvas::getDsFrame() const
+TMShape* Canvas::getSelectedChildWD(QPoint point)
+{
+    for(int i = tmshapes.size() - 1; i >= 0; --i)
+    {
+      if(tmshapes[i]->hasPoint(point))
+      {
+         return tmshapes[i];
+      }
+    }
+    return nullptr;
+}
+
+TMShape* Canvas::getSelectedChild()
+{
+    for(TMShape* shape : tmshapes)
+        if(shape->isSelected())
+            return shape;
+    return nullptr;
+}
+
+QListWidget* Canvas::getDsFrame() const
 {
     return dsFrame;
 }

@@ -53,11 +53,15 @@ int TMLine::getShapeCode()
 
 void TMLine::draw(QPainter *painter, QListWidget *dsList)
 {
-    QListWidgetItem *item = new QListWidgetItem;
-    item->setText("Line");
-    item->setForeground(pen.color());
+    if(painter == nullptr) return;
 
-    dsList->addItem(item);
+    if(dsList != nullptr) {
+        QListWidgetItem *item = new QListWidgetItem;
+        item->setText("Line");
+        item->setForeground(pen.color());
+        dsList->addItem(item);
+        if(select) dsList->setCurrentItem(item);
+    }
 
     if(select) {
         pen.setStyle(Qt::DashDotDotLine);
@@ -65,8 +69,6 @@ void TMLine::draw(QPainter *painter, QListWidget *dsList)
 
         painter->drawRect(start.x() - 5, start.y() - 5, 10, 10);
         painter->drawRect(end.x() - 5, end.y() - 5, 10, 10);
-
-        dsList->setCurrentItem(item);
     }
     else {
         pen.setStyle(Qt::SolidLine);
@@ -79,9 +81,11 @@ bool TMLine::hasPoint(QPoint point)
     if(distance(end, point) < 6) return false;
     if(distance(start, point) < 6) return false;
     double dist =  distance(end, start) - distance(point, start) - distance(end, point);
-    if(dist >= -6 && dist <= 6) select = true;
-    else select = false;
-    return select;
+    if(dist >= -6 && dist <= 6) {
+        select = true;
+        return true;
+    }
+    else return false;
 }
 double TMLine::distance(QPoint a, QPoint b)
 {

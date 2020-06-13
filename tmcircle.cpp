@@ -50,12 +50,15 @@ int TMCircle::getShapeCode()
 }
 void TMCircle::draw(QPainter *painter, QListWidget *dsList)
 {
+    if(painter == nullptr) return;
+    if(dsList != nullptr) {
     QListWidgetItem *item;
-    item = new QListWidgetItem;
-    item->setText("Circle");
-    item->setForeground(pen.color());
-
-    dsList->addItem(item);
+        item = new QListWidgetItem;
+        item->setText("Circle");
+        item->setForeground(pen.color());
+        dsList->addItem(item);
+        if(select) dsList->setCurrentItem(item);
+    }
 
     if(select) {
         pen.setStyle(Qt::DashDotDotLine);
@@ -66,7 +69,6 @@ void TMCircle::draw(QPainter *painter, QListWidget *dsList)
         painter->drawRect(x - radius - 5, y - 5, 10, 10);
         painter->drawRect(x + radius - 5, y - 5, 10, 10);
         painter->drawRect(x - 5, y - 5 - radius, 10, 10);
-        dsList->setCurrentItem(item);
     }
     else{
         pen.setStyle(Qt::SolidLine);
@@ -80,11 +82,11 @@ bool TMCircle::hasPoint(QPoint point)
     int dist = sqrt(pow((center.x() - point.x()), 2) + pow((center.y() - point.y()), 2));
     int minDist = dist - 4;
     int maxDist = dist + 4;
-    if(radius >= minDist && radius <= maxDist)
+    if(radius >= minDist && radius <= maxDist) {
         select = true;
-    else select = false;
-
-    return  select;
+        return select;
+    }
+    return  false;
 }
 void TMCircle::moveShapeBy(int dx, int dy)
 {

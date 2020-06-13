@@ -19,10 +19,14 @@ public:
     void mouseReleaseEvent(QMouseEvent *event);
     void mouseMoveEvent(QMouseEvent *event);
     void keyPressEvent(QKeyEvent *keyevent);
+    void keyReleaseEvent(QKeyEvent *keyevent);
 
     void selectShapeEvent(TMShape *shape);
     void deselectShapeEvent();
+
     void removeSelectedShapeEvent();
+    void removeSelectedShapesEvent();
+
     void addShapeEvent(TMShape *shape = nullptr);
     void shapeRemovedEvent();
 
@@ -45,8 +49,12 @@ private:
     TMCircle *circle;
 
     TMShape * selectedShape = nullptr;
+    QList<TMShape*> selectedShapes;
+
     TMShape * toPaste = nullptr;
+    QList<TMShape*> mtoPaste;
     QPoint clickedPoint;
+
     bool hasDragged = false;
 
     int FREE_HAND_MODE  = 0;
@@ -55,6 +63,7 @@ private:
     int CIRCLE_MODE     = 3;
 
     int curr_mode       = 0;
+    bool isCRTLPressed = false;
 
     void styleElements();
     bool isPointInFrame(QPoint point);

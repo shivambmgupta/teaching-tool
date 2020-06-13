@@ -15,12 +15,17 @@ class Canvas : public QFrame
 {
     Q_OBJECT
 
+
 public:
     explicit Canvas(QWidget *parent = nullptr);
     ~Canvas();
     void paintEvent(QPaintEvent *event) override;
     QList<TMShape *> tmshapes;
-    TMShape * getSelectedChild(QPoint point);
+
+    TMShape* getSelectedChild();
+    TMShape* getSelectedChild(QPoint point);
+    TMShape* getSelectedChildWD(QPoint point); //WD stands for
+                                               //without diabling others.
     QListWidget *getDsFrame() const;
     void setDsFrame(QListWidget *value);
     void selectChild(int);

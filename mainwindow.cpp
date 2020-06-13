@@ -16,6 +16,7 @@ MainWindow::MainWindow(QWidget *parent)
     configureButtons();
 
     this->ui->frame->setDsFrame(this->ui->dsList);
+    this->ui->dsList->setSelectionMode(QAbstractItemView::ExtendedSelection);
 }
 
 MainWindow::~MainWindow()
@@ -80,7 +81,26 @@ void MainWindow::mousePressEvent(QMouseEvent *event)
     this->clickedPoint.setX(x - xu);
     this->clickedPoint.setY(y - yu);
 
-    TMShape *sShape = this->ui->frame->getSelectedChild(QPoint(x - xu, y - yu));
+    TMShape *sShape;
+
+    if(this->isCRTLPressed) {
+        if(selectedShape != nullptr) {
+            this->selectedShapes.push_back(selectedShape);
+            this->selectedShape = nullptr;
+        }
+        sShape = this->ui->frame->getSelectedChildWD(clickedPoint);
+        if(sShape != nullptr) {
+            this->selectedShapes.push_back(sShape);
+            this->ui->clearSelected->setEnabled(true);
+            this->ui->frame->update();
+            return;
+        }
+    }
+    else {
+        this->selectedShapes.clear();
+    }
+
+    sShape = this->ui->frame->getSelectedChild(QPoint(x - xu, y - yu));
 
     if(sShape != nullptr) {
         this->selectShapeEvent(sShape);
@@ -175,7 +195,6 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event)
        this->ui->frame->getShapeDrawn(circle);
     }
 
-    this->clickedPoint = p;
     this->hasDragged = true;
     this->addShapeEvent();
 }
@@ -207,8 +226,7 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *event)
         if(height < 0) height *= -1;
         rectangle->setHeight(height);
 
-        this->ui->frame->tmshapes.push_back(rectangle);
-        this->addShapeEvent(line);
+        this->addShapeEvent(rectangle);
     }
 
     else if(curr_mode == FREE_HAND_MODE && hasDragged) {
@@ -224,7 +242,6 @@ void MainWindow::mouseReleaseEvent(QMouseEvent *event)
     }
 
     this->ui->frame->update();
-    this->clickedPoint = p;
     this->hasDragged = false;
 }
 
@@ -285,7 +302,12 @@ void MainWindow::on_clear_clicked()
 
 void MainWindow::on_clearSelected_clicked()
 {
-    this->removeSelectedShapeEvent();
+    if(!this->selectedShapes.isEmpty()) {
+        this->removeSelectedShapesEvent();
+    }
+    else {
+        this->removeSelectedShapeEvent();
+    }
     this->ui->frame->update();
 }
 
@@ -319,20 +341,34 @@ void MainWindow::on_dsList_itemClicked(QListWidgetItem *item)
 void MainWindow::keyPressEvent(QKeyEvent *keyevent)
 {
     if (keyevent->matches(QKeySequence::Copy)) {
-        if(selectedShape != nullptr)
-          this->toPaste = selectedShape;
+        if(!selectedShapes.isEmpty()) {
+            for(TMShape* shape : selectedShapes)
+                mtoPaste.push_back(shape);
+        }
+        else if(selectedShape != nullptr)
+            this->toPaste = selectedShape;
     }
     else if (keyevent->matches(QKeySequence::Cut)) {
-        if(selectedShape != nullptr) {
-         this->toPaste = selectedShape;
+        if(!selectedShapes.isEmpty()) {
+            for(TMShape* shape : selectedShapes)
+                mtoPaste.push_back(shape);
+            removeSelectedShapesEvent();
+        }
+        else if(selectedShape != nullptr) {
+            this->toPaste = selectedShape;
 
          //It is just same to remove the selected one.
 
-         this->removeSelectedShapeEvent();
+         this->removeSelectedShapeEvent();     
         }
+        this->ui->frame->update();
     }
     if (keyevent->matches(QKeySequence::Paste)) {
-        if(this->toPaste != nullptr) {
+
+        if(!this->mtoPaste.isEmpty()) {
+            qDebug() << "multiple pasting is not yet implemented." << '\n';
+        }
+        else if(this->toPaste != nullptr) {
             int tmpShapeCode = toPaste->getShapeCode();
             if(tmpShapeCode == 0) {
                TMFreeHand* oldShape = (TMFreeHand*)toPaste;
@@ -396,10 +432,57 @@ void MainWindow::keyPressEvent(QKeyEvent *keyevent)
                 newCircle->setSelection(false);
                 this->addShapeEvent(newCircle);
             }
+
+            this->ui->frame->update();
         }
 
+    } //end of paste sequence
+
+    if(keyevent->key() == Qt::Key_Control) {
+        this->isCRTLPressed = true;
     }
-    this->ui->frame->update();
+
+    if(this->isCRTLPressed && keyevent->key() == Qt::Key_G) {
+        if(!this->selectedShapes.isEmpty()) {
+            TMGroup* group = new TMGroup;
+            for(TMShape* shape: selectedShapes) {
+                group->addShape(shape);
+                this->ui->frame->tmshapes.removeOne(shape);
+            }
+            this->selectedShapes.clear();
+            this->ui->frame->tmshapes.push_back(group);
+            this->ui->frame->update();
+        }
+    }
+
+    if(this->isCRTLPressed && keyevent->key() == Qt::Key_U){
+        TMShape* shape = this->ui->frame->getSelectedChild();
+        //4 is the shape code for the group.
+        if(shape != nullptr && shape->getShapeCode() == 4) {
+            TMGroup* group = (TMGroup*)shape;
+            this->ui->frame->tmshapes.removeOne(group);
+            for(TMShape* s : group->getShapes()) {
+                this->ui->frame->tmshapes.push_back(s);
+            }
+            group->getShapes().clear();
+            this->ui->frame->update();
+        }
+    }
+
+}
+
+void MainWindow::keyReleaseEvent(QKeyEvent *keyevent)
+{
+    if(keyevent->key() == Qt::Key_Control) {
+        this->isCRTLPressed = false;
+    }
+
+    if(keyevent->key() == Qt::Key_Backspace) {
+        if(isCRTLPressed)
+            this->on_clearSelected_clicked();
+        else
+            this->on_undoButton_clicked();
+    }
 }
 
 void MainWindow::selectShapeEvent(TMShape *shape)
@@ -426,6 +509,16 @@ void MainWindow::removeSelectedShapeEvent()
     this->shapeRemovedEvent();
 }
 
+void MainWindow::removeSelectedShapesEvent()
+{
+    for(TMShape * shape: selectedShapes)
+            this->ui->frame->tmshapes.removeOne(shape);
+    selectedShapes.clear();
+    this->ui->clearSelected->setEnabled(false);
+    this->shapeRemovedEvent();
+
+}
+
 void MainWindow::addShapeEvent(TMShape *shape)
 {
     if(shape != nullptr)
@@ -442,3 +535,4 @@ void MainWindow::shapeRemovedEvent()
         this->ui->clear->setEnabled(false);
     }
 }
+

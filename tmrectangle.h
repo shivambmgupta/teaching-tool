@@ -38,7 +38,6 @@ private:
     bool select = false;
     int RECTANGLE = 2;
     QPen pen;
-    QListWidgetItem *item;
-};
+ };
 
 #endif // TMRECTANGLE_H

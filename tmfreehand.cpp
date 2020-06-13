@@ -39,17 +39,21 @@ int TMFreeHand::getShapeCode()
 }
 void TMFreeHand::draw(QPainter *painter, QListWidget *dsList)
 {
-    QListWidgetItem *item = new QListWidgetItem;
-    item->setText("Free Hand");
-    item->setForeground(pen.color());
-    dsList->addItem(item);
+    if(painter == nullptr) return;
+
+    if(dsList != nullptr) {
+        QListWidgetItem *item = new QListWidgetItem;
+        item->setText("Free Hand");
+        item->setForeground(pen.color());
+        dsList->addItem(item);
+        if(select) dsList->setCurrentItem(item);
+    }
 
     int l = points.size() - 1;
 
     if(select){
         pen.setStyle(Qt::DashDotDotLine);
         painter->setPen(pen);
-        dsList->setCurrentItem(item);
         int gap;
         gap = l/20 > 5 ? l/20 : 5;
         for(int i = 0; i < l; ++i) {
@@ -66,7 +70,6 @@ void TMFreeHand::draw(QPainter *painter, QListWidget *dsList)
 }
 bool TMFreeHand::hasPoint(QPoint point)
 {
-    select = false;
     int l = points.size() - 1;
     int pThresholdDiff = 6;
     int nThresholdDiff = pThresholdDiff * -1;
@@ -74,10 +77,10 @@ bool TMFreeHand::hasPoint(QPoint point)
      double dist =  distance(points[i + 1], points[i]) - distance(point, points[i]) - distance(points[i + 1], point);
      if(dist >= nThresholdDiff && dist <= pThresholdDiff) {
          select = true;
-         break;
+         return true;
      }
     }
-    return select;
+    return false;
 }
 void TMFreeHand::addPoint(QPoint point)
 {
