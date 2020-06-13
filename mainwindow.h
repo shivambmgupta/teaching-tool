@@ -23,7 +23,7 @@ public:
     void selectShapeEvent(TMShape *shape);
     void deselectShapeEvent();
     void removeSelectedShapeEvent();
-    void addShapeEvent(TMShape *shape);
+    void addShapeEvent(TMShape *shape = nullptr);
     void shapeRemovedEvent();
 
 private slots:

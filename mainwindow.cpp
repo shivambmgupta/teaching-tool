@@ -177,6 +177,7 @@ void MainWindow::mouseMoveEvent(QMouseEvent *event)
 
     this->clickedPoint = p;
     this->hasDragged = true;
+    this->addShapeEvent();
 }
 void MainWindow::mouseReleaseEvent(QMouseEvent *event)
 {
@@ -427,7 +428,9 @@ void MainWindow::removeSelectedShapeEvent()
 
 void MainWindow::addShapeEvent(TMShape *shape)
 {
-    this->ui->frame->tmshapes.push_back(shape);
+    if(shape != nullptr)
+           this->ui->frame->tmshapes.push_back(shape);
+
     this->ui->undoButton->setEnabled(true);
     this->ui->clear->setEnabled(true);
 }
