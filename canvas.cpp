@@ -1,5 +1,6 @@
 #include "canvas.h"
 #include "ui_canvas.h"
+#include <QDebug>
 #include <QPaintEvent>
 
 Canvas::Canvas(QWidget *parent) :
@@ -100,3 +101,94 @@ void Canvas::getShapeDrawn(TMShape *shape)
     this->drawOnly = shape;
     this->update();
 }
+
+
+void Canvas::saveFile(QString fileName)
+{
+    QFile toSave(fileName);
+    if(!toSave.open(QFile::WriteOnly)){
+        qDebug() << "Error opening file" << '\n';
+        return;
+    }
+
+    if(!toSave.exists()){
+       return;
+    }
+
+    QJsonArray jsonArray;
+    for(TMShape* shape: tmshapes) {
+        jsonArray.append(shape->toJson());
+    }
+
+    QJsonDocument doc(jsonArray);
+    toSave.write(doc.toJson());
+
+}
+
+QList<TMShape*> Canvas::loadFile(QString fileName)
+{
+    QFile file(fileName);
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+            return QList<TMShape*>();
+
+    QJsonDocument doc = QJsonDocument::fromJson(file.readAll());
+
+    if(!doc.isArray()) {
+      qDebug() << "Wrong file" << '\n';
+      return QList<TMShape*>();
+    }
+
+    QJsonArray jsonArray = doc.array();
+
+    QList<TMShape*> shapes;
+    QJsonObject obj;
+    int shapeCode;
+    for(const auto& value : jsonArray) {
+        obj = value.toObject();
+        shapeCode = obj["shapeCode"].toInt();
+        if(shapeCode == 0) {
+            TMFreeHand* fh = new TMFreeHand;
+            fh->fromJSON(obj);
+            shapes.push_back(fh);
+        }
+        else if(shapeCode == 1) {
+            TMLine* fh = new TMLine;
+            fh->fromJSON(obj);
+            shapes.push_back(fh);
+        }
+        else if(shapeCode == 2) {
+            TMRectangle* fh = new TMRectangle;
+            fh->fromJSON(obj);
+            shapes.push_back(fh);
+        }
+        else if(shapeCode == 3) {
+            TMCircle* fh = new TMCircle;
+            fh->fromJSON(obj);
+            shapes.push_back(fh);
+        }
+        else if(shapeCode == 4) {
+            TMGroup* fh = new TMGroup;
+            fh->fromJSON(obj);
+            shapes.push_back(fh);
+        }
+    }
+
+    return shapes;
+
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

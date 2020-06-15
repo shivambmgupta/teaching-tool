@@ -98,3 +98,46 @@ void TMFreeHand::moveShapeBy(int dx, int dy)
         point.setY(point.y() + dy);
     }
 }
+
+QJsonValue TMFreeHand::toJson()
+{
+    QJsonObject object;
+    object["shapeCode"] = FREE_HAND;
+    int i = 1;
+
+    for(QPoint point: points) {
+        object["point" + QString::number(i)] = QJsonObject({
+                                                               {"x", point.x()},
+                                                               {"y", point.y()}
+                                                           });
+        ++i;
+    }
+
+    object["pen"] = QJsonObject({
+                                    {"color", pen.color().name()},
+                                    {"width", pen.width()}
+                                });
+    return object;
+}
+
+void TMFreeHand::fromJSON(QJsonObject object)
+{
+    QPoint point;
+    QVector<QPoint> points;
+    QJsonObject obj;
+    for(int i = 1; i < object.size() - 1; ++i) {
+        obj = object["point" + QString::number(i)].toObject();
+        point.setX(obj["x"].toInt());
+        point.setY(obj["y"].toInt());
+        points.push_back(point);
+    }
+
+    QPen pen;
+    obj = object["pen"].toObject();
+    pen.setColor(obj["color"].toString());
+    pen.setWidth(obj["width"].toInt());
+
+    this->setPoints(points);
+    this->setPen(pen);
+
+}

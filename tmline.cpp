@@ -1,6 +1,7 @@
 #include "tmline.h"
 #include <math.h>
 #include <QListWidgetItem>
+#include <QJsonObject>
 
 TMLine::TMLine()
 {
@@ -102,4 +103,49 @@ void TMLine::moveShapeBy(int dx, int dy)
     tempEnd.setX(end.x() + dx);
     tempEnd.setY(end.y() + dy);
     this->setEnd(tempEnd);
+}
+
+QJsonValue TMLine::toJson()
+{
+    QJsonObject jsonObject;
+    jsonObject["shapeCode"] = LINE;
+    jsonObject["start"] = QJsonObject({
+                                          {"x", start.x()},
+                                          {"y", start.y()}
+                                      });
+    jsonObject["end"] = QJsonObject({
+                                        {"x", end.x()},
+                                        {"y", end.y()}
+                                    });
+
+    jsonObject["pen"] = QJsonObject({
+                                        {"color", QString(pen.color().name())},
+                                        {"width", pen.width()}
+                                    });
+
+    return jsonObject;
+}
+
+void TMLine::fromJSON(QJsonObject object)
+{
+  QJsonObject jsonObj = object["start"].toObject();
+
+  QPoint start;
+  start.setX(jsonObj["x"].toInt());
+  start.setY(jsonObj["y"].toInt());
+
+  jsonObj = object["end"].toObject();
+  QPoint end;
+  end.setX(jsonObj["x"].toInt());
+  end.setY(jsonObj["y"].toInt());
+
+  jsonObj = object["pen"].toObject();
+  QPen pen;
+  pen.setColor(jsonObj["color"].toString());
+  pen.setWidth(jsonObj["width"].toInt());
+
+  this->setStart(start);
+  this->setEnd(end);
+  this->setPen(pen);
+
 }

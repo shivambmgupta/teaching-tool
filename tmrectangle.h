@@ -14,6 +14,8 @@ public:
     bool isSelected() override;
     void moveShapeBy(int dx, int dy) override;
     int getShapeCode() override;
+    void fromJSON(QJsonObject) override;
+    QJsonValue toJson() override;
 
     int getLeftUpperX() const;
     void setLeftUpperX(int value);

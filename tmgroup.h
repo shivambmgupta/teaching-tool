@@ -13,6 +13,8 @@ public:
     bool isSelected() override;
     bool hasPoint(QPoint point) override;
     int getShapeCode() override;
+    QJsonValue toJson() override;
+    void fromJSON(QJsonObject) override;
 
     void addShape(TMShape*);
     QList<TMShape *> getShapes() const;

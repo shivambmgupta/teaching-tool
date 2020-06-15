@@ -5,6 +5,8 @@
 #include <QPainter>
 #include <QList>
 #include <QListWidget>
+#include <QJsonArray>
+#include <QJsonDocument>
 #include "tmshapeheader.h"
 
 namespace Ui {
@@ -31,6 +33,9 @@ public:
     void selectChild(int);
     bool hasSelectedChild();
     void getShapeDrawn(TMShape *);
+
+    void saveFile(QString fileName);
+    QList<TMShape*> loadFile(QString file);
 
 private:
     Ui::Canvas *ui;

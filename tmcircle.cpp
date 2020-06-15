@@ -96,3 +96,40 @@ void TMCircle::moveShapeBy(int dx, int dy)
     this->setCenter(tempP);
 }
 
+QJsonValue TMCircle::toJson()
+{
+    QJsonObject object;
+    object["shapeCode"] = CIRCLE;
+    object["point"] = QJsonObject({
+                                      {"x", center.x()},
+                                      {"y", center.y()}
+                                  });
+    object["radius"] = radius;
+    object["pen"] = QJsonObject({
+                                    {"color", pen.color().name()},
+                                    {"width", pen.width()}
+                                });
+    return object;
+}
+
+void TMCircle::fromJSON(QJsonObject object)
+{
+
+    QJsonObject obj;
+    obj = object["point"].toObject();
+
+    QPoint center;
+    center.setX(obj["x"].toInt());
+    center.setY(obj["y"].toInt());
+    QPen pen;
+    obj = object["pen"].toObject();
+    pen.setColor(obj["color"].toString());
+    pen.setWidth(obj["width"].toInt());
+
+    this->setCenter(center);
+    this->setRadius(((float)object["radius"].toDouble()));
+    this->setPen(pen);
+
+
+}
+

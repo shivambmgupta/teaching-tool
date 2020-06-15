@@ -2,6 +2,7 @@
 #define TMSHAPE_H
 #include <QPainter>
 #include <QListWidget>
+#include <QJsonObject>
 
 class TMShape
 {
@@ -13,6 +14,9 @@ public:
     virtual void setSelection(bool) = 0;
     virtual void moveShapeBy(int dx, int dy) = 0;
     virtual int getShapeCode() = 0;
+
+    virtual QJsonValue toJson() = 0;
+    virtual void fromJSON(QJsonObject) = 0;
 };
 
 #endif // TMSHAPE_H

@@ -15,6 +15,9 @@ public:
     void moveShapeBy(int dx, int dy) override;
     int getShapeCode() override;
 
+    QJsonValue toJson() override;;
+    void fromJSON(QJsonObject) override;
+
     QPoint getCenter() const;
     void setCenter(const QPoint &value);
 

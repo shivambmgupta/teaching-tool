@@ -132,3 +132,33 @@ void TMRectangle::moveShapeBy(int dx, int dy)
     this->setLeftUpperX(leftUpperX + dx);
     this->setLeftUpperY(leftUpperY + dy);
 }
+
+void TMRectangle::fromJSON(QJsonObject object)
+{
+    QJsonObject obj;
+    setLeftUpperX(object["leftUpperX"].toInt());
+    setLeftUpperY(object["leftUpperY"].toInt());
+    setWidth(object["width"].toInt());
+    setHeight(object["height"].toInt());
+    QPen pen;
+    obj = object["pen"].toObject();
+    pen.setColor(obj["color"].toString());
+    pen.setWidth(obj["width"].toInt());
+
+    setPen(pen);
+
+}
+QJsonValue TMRectangle::toJson()
+{
+    QJsonObject object;
+    object["shapeCode"] = RECTANGLE;
+    object["leftUpperX"] = leftUpperX;
+    object["leftUpperY"] = leftUpperY;
+    object["width"] = width;
+    object["height"] = height;
+    object["pen"] = QJsonObject({
+                                    {"color", pen.color().name()},
+                                    {"width", pen.width()}
+                                });
+    return object;
+}

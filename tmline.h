@@ -2,6 +2,7 @@
 #define TMLINE_H
 #include "tmshape.h"
 #include <QListWidget>
+#include <QJsonValue>
 
 class TMLine : public TMShape
 {
@@ -13,6 +14,13 @@ public:
     void setSelection(bool value) override;
     void moveShapeBy(int dx, int dy) override;
     int getShapeCode() override;
+
+
+
+    QJsonValue toJson() override;
+    void fromJSON(QJsonObject) override;
+
+
 
     QPoint getStart() const;
     void setStart(const QPoint &value);

@@ -2,6 +2,9 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QMessageBox>
+#include <QPlainTextEdit>
+#include "logger.h"
 #include "tmshapeheader.h"
 
 QT_BEGIN_NAMESPACE
@@ -22,13 +25,29 @@ public:
     void keyReleaseEvent(QKeyEvent *keyevent);
 
     void selectShapeEvent(TMShape *shape);
+    void selectedShapesEvent();
     void deselectShapeEvent();
+    void configureMenuActions();
+    void connectMenuActions();
+
 
     void removeSelectedShapeEvent();
     void removeSelectedShapesEvent();
 
     void addShapeEvent(TMShape *shape = nullptr);
     void shapeRemovedEvent();
+
+public slots:
+    void onCopyClick();
+    void onCutClick();
+    void onPasteClick();
+    void onGroupClick();
+    void onUngroupClick();
+    void onSaveAsClick();
+    void onOpenClick();
+    void onCtrlBackspaceClick();
+    void onBackspaceClick();
+
 
 private slots:
     void on_clear_clicked();
@@ -39,6 +58,8 @@ private slots:
     void on_clearSelected_clicked();
     void on_dsList_itemClicked(QListWidgetItem *item);
     void on_undoButton_clicked();
+    bool hasGroup();
+    bool hasSelected();
 
 private:
     Ui::MainWindow *ui;
@@ -63,12 +84,25 @@ private:
     int CIRCLE_MODE     = 3;
 
     int curr_mode       = 0;
-    bool isCRTLPressed = false;
+    bool isCTRLPressed = false;
 
     void styleElements();
     bool isPointInFrame(QPoint point);
     bool isPointInFrame(int x, int y);
     void addToolTips();
     void configureButtons();
+
+    QMessageBox confirmBox;
+
+    int menuOffset = 25;
+
+    QPlainTextEdit *editor;
+    QString logFileName;
+    Logger *logger;
+
+    QAction *open, *save, *cut, *copy, *paste, *group, *ungroup, *ctrlBksp, *bksp;
+
+
+
 };
 #endif // MAINWINDOW_H
