@@ -39,17 +39,21 @@ int TMFreeHand::getShapeCode()
 }
 void TMFreeHand::draw(QPainter *painter, QListWidget *dsList)
 {
-    QListWidgetItem *item = new QListWidgetItem;
-    item->setText("Free Hand");
-    item->setForeground(pen.color());
-    dsList->addItem(item);
+    if(painter == nullptr) return;
+
+    if(dsList != nullptr) {
+        QListWidgetItem *item = new QListWidgetItem;
+        item->setText("Free Hand");
+        item->setForeground(pen.color());
+        dsList->addItem(item);
+        if(select) dsList->setCurrentItem(item);
+    }
 
     int l = points.size() - 1;
 
     if(select){
         pen.setStyle(Qt::DashDotDotLine);
         painter->setPen(pen);
-        dsList->setCurrentItem(item);
         int gap;
         gap = l/20 > 5 ? l/20 : 5;
         for(int i = 0; i < l; ++i) {
@@ -66,7 +70,6 @@ void TMFreeHand::draw(QPainter *painter, QListWidget *dsList)
 }
 bool TMFreeHand::hasPoint(QPoint point)
 {
-    select = false;
     int l = points.size() - 1;
     int pThresholdDiff = 6;
     int nThresholdDiff = pThresholdDiff * -1;
@@ -74,10 +77,10 @@ bool TMFreeHand::hasPoint(QPoint point)
      double dist =  distance(points[i + 1], points[i]) - distance(point, points[i]) - distance(points[i + 1], point);
      if(dist >= nThresholdDiff && dist <= pThresholdDiff) {
          select = true;
-         break;
+         return true;
      }
     }
-    return select;
+    return false;
 }
 void TMFreeHand::addPoint(QPoint point)
 {
@@ -94,4 +97,47 @@ void TMFreeHand::moveShapeBy(int dx, int dy)
         point.setX(point.x() + dx);
         point.setY(point.y() + dy);
     }
+}
+
+QJsonValue TMFreeHand::toJson()
+{
+    QJsonObject object;
+    object["shapeCode"] = FREE_HAND;
+    int i = 1;
+
+    for(QPoint point: points) {
+        object["point" + QString::number(i)] = QJsonObject({
+                                                               {"x", point.x()},
+                                                               {"y", point.y()}
+                                                           });
+        ++i;
+    }
+
+    object["pen"] = QJsonObject({
+                                    {"color", pen.color().name()},
+                                    {"width", pen.width()}
+                                });
+    return object;
+}
+
+void TMFreeHand::fromJSON(QJsonObject object)
+{
+    QPoint point;
+    QVector<QPoint> points;
+    QJsonObject obj;
+    for(int i = 1; i < object.size() - 1; ++i) {
+        obj = object["point" + QString::number(i)].toObject();
+        point.setX(obj["x"].toInt());
+        point.setY(obj["y"].toInt());
+        points.push_back(point);
+    }
+
+    QPen pen;
+    obj = object["pen"].toObject();
+    pen.setColor(obj["color"].toString());
+    pen.setWidth(obj["width"].toInt());
+
+    this->setPoints(points);
+    this->setPen(pen);
+
 }

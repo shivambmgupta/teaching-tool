@@ -416,11 +416,11 @@ QPushButton:disabled {
      </item>
     </layout>
    </widget>
+   <zorder>layoutWidget3</zorder>
    <zorder>frame</zorder>
    <zorder>dsFrame</zorder>
    <zorder>topFrame</zorder>
    <zorder>toolBoxFrame</zorder>
-   <zorder>layoutWidget</zorder>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
@@ -428,11 +428,151 @@ QPushButton:disabled {
      <x>0</x>
      <y>0</y>
      <width>1866</width>
-     <height>21</height>
+     <height>18</height>
     </rect>
    </property>
+   <property name="autoFillBackground">
+    <bool>false</bool>
+   </property>
+   <property name="styleSheet">
+    <string notr="true"> QMenuBar {
+background-color: white;
+color: black;
+}
+
+QMenuBar::item {
+spacing: 3px; /* spacing between menu bar items */
+padding: 1px 4px;
+background: transparent;
+border-radius: 4px;
+}
+
+QMenuBar::item:selected { /* when selected using mouse or keyboard */
+background: #a8a8a8;
+}
+
+QMenuBar::item:pressed {
+background: #888888;
+}</string>
+   </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="styleSheet">
+     <string notr="true">QMenu{
+ background-color: rgb(238, 238, 238);
+}
+
+QMenu::item{
+ background-color: rgb(238, 238, 238);
+ color: black;
+ }
+
+ QMenu::item:selected:!disabled{
+ background-color: rgb(0, 85, 127);
+ color: rgb(255, 255, 255);
+ } 
+
+QMenu::item:disabled{
+color: rgb(161, 161, 161);
+}</string>
+    </property>
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="actionOpen_Ctril_J"/>
+    <addaction name="actionSave_As_Ctrl_S"/>
+   </widget>
+   <widget class="QMenu" name="menuEdit">
+    <property name="styleSheet">
+     <string notr="true">QMenu{
+ background-color: rgb(238, 238, 238);
+}
+
+QMenu::item{
+ background-color: rgb(238, 238, 238);
+ color: black;
+ }
+
+ QMenu::item:selected:!disabled{
+ background-color: rgb(0, 85, 127);
+ color: rgb(255, 255, 255);
+ } 
+
+QMenu::item:disabled{
+color: rgb(161, 161, 161);
+}</string>
+    </property>
+    <property name="title">
+     <string>Edit</string>
+    </property>
+    <addaction name="actionCopy_Ctrl_C"/>
+    <addaction name="actionCut_Ctrl_X"/>
+    <addaction name="actionPaste_Ctrl_V"/>
+    <addaction name="separator"/>
+    <addaction name="actionUndo_Backspace"/>
+    <addaction name="actionClear_selected_Ctrl_Backspace"/>
+    <addaction name="separator"/>
+    <addaction name="actionGroup_Ctrl_G"/>
+    <addaction name="actionUngroup_Ctrl_U"/>
+   </widget>
+   <addaction name="menuFile"/>
+   <addaction name="menuEdit"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionSave">
+   <property name="text">
+    <string>Save As...  (Ctrl+S)</string>
+   </property>
+  </action>
+  <action name="actionOpen">
+   <property name="text">
+    <string>Open...  (Ctrl+J)</string>
+   </property>
+  </action>
+  <action name="actionOpen_Ctril_J">
+   <property name="text">
+    <string>Open [Ctril+J]</string>
+   </property>
+  </action>
+  <action name="actionSave_As_Ctrl_S">
+   <property name="text">
+    <string>Save As [Ctrl+S]</string>
+   </property>
+  </action>
+  <action name="actionCopy_Ctrl_C">
+   <property name="text">
+    <string>Copy [Ctrl+C]</string>
+   </property>
+  </action>
+  <action name="actionCut_Ctrl_X">
+   <property name="text">
+    <string>Cut [Ctrl+X]</string>
+   </property>
+  </action>
+  <action name="actionPaste_Ctrl_V">
+   <property name="text">
+    <string>Paste [Ctrl+V]</string>
+   </property>
+  </action>
+  <action name="actionUndo_Backspace">
+   <property name="text">
+    <string>Undo [Backspace]</string>
+   </property>
+  </action>
+  <action name="actionClear_selected_Ctrl_Backspace">
+   <property name="text">
+    <string>Clear selected [Ctrl+Backspace]</string>
+   </property>
+  </action>
+  <action name="actionGroup_Ctrl_G">
+   <property name="text">
+    <string>Group [Ctrl+G]</string>
+   </property>
+  </action>
+  <action name="actionUngroup_Ctrl_U">
+   <property name="text">
+    <string>Ungroup [Ctrl+U]</string>
+   </property>
+  </action>
  </widget>
  <customwidgets>
   <customwidget>

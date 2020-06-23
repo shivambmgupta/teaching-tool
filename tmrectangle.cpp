@@ -69,10 +69,15 @@ void TMRectangle::setPen(const QPen &value)
 }
 void TMRectangle::draw(QPainter *painter, QListWidget *dsList)
 {
-    QListWidgetItem *item= new QListWidgetItem;
-    item->setText("Rectangle");
-    item->setForeground(pen.color());
-    dsList->addItem(item);
+    if(painter == nullptr) return;
+
+    if(dsList != nullptr) {
+        QListWidgetItem *item= new QListWidgetItem;
+        item->setText("Rectangle");
+        item->setForeground(pen.color());
+        dsList->addItem(item);
+        if(select) dsList->setCurrentItem(item);
+    }
 
     if(select) {
         pen.setStyle(Qt::DashDotDotLine);
@@ -85,7 +90,6 @@ void TMRectangle::draw(QPainter *painter, QListWidget *dsList)
         painter->drawRect(leftUpperX - 5 + width, leftUpperY - 5 + height/2, 10, 10);
         painter->drawRect(leftUpperX - 5 + width, leftUpperY  - 5 + height, 10, 10);
         painter->drawRect(leftUpperX - 5 + width/2, leftUpperY - 5 + height, 10, 10);
-        dsList->setCurrentItem(item);
     }
     else {
         pen.setStyle(Qt::SolidLine);
@@ -97,6 +101,8 @@ bool TMRectangle::hasPoint(QPoint point)
 {
     int x = point.x();
     int y = point.y();
+
+    bool select;
 
     int leaveEndPointOffset = 3;
     int pThresholdDiff = 3;
@@ -114,7 +120,10 @@ bool TMRectangle::hasPoint(QPoint point)
     else if(y >= leftUpperY + leaveEndPointOffset && y <= leftUpperY - leaveEndPointOffset + height
             && x - leftUpperX - width <= pThresholdDiff && x - leftUpperX - width >= nThresholdDiff)
          select = true;
+
     else select = false;
+
+    if(select) this->select = true;
 
     return select;
 }
@@ -122,4 +131,34 @@ void TMRectangle::moveShapeBy(int dx, int dy)
 {
     this->setLeftUpperX(leftUpperX + dx);
     this->setLeftUpperY(leftUpperY + dy);
+}
+
+void TMRectangle::fromJSON(QJsonObject object)
+{
+    QJsonObject obj;
+    setLeftUpperX(object["leftUpperX"].toInt());
+    setLeftUpperY(object["leftUpperY"].toInt());
+    setWidth(object["width"].toInt());
+    setHeight(object["height"].toInt());
+    QPen pen;
+    obj = object["pen"].toObject();
+    pen.setColor(obj["color"].toString());
+    pen.setWidth(obj["width"].toInt());
+
+    setPen(pen);
+
+}
+QJsonValue TMRectangle::toJson()
+{
+    QJsonObject object;
+    object["shapeCode"] = RECTANGLE;
+    object["leftUpperX"] = leftUpperX;
+    object["leftUpperY"] = leftUpperY;
+    object["width"] = width;
+    object["height"] = height;
+    object["pen"] = QJsonObject({
+                                    {"color", pen.color().name()},
+                                    {"width", pen.width()}
+                                });
+    return object;
 }

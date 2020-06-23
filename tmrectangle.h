@@ -14,6 +14,8 @@ public:
     bool isSelected() override;
     void moveShapeBy(int dx, int dy) override;
     int getShapeCode() override;
+    void fromJSON(QJsonObject) override;
+    QJsonValue toJson() override;
 
     int getLeftUpperX() const;
     void setLeftUpperX(int value);
@@ -38,7 +40,6 @@ private:
     bool select = false;
     int RECTANGLE = 2;
     QPen pen;
-    QListWidgetItem *item;
-};
+ };
 
 #endif // TMRECTANGLE_H

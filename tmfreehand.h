@@ -14,6 +14,8 @@ public:
     void setSelection(bool) override;
     void moveShapeBy(int dx, int dy) override;
     int getShapeCode() override;
+    QJsonValue toJson() override;
+    void fromJSON(QJsonObject) override;
 
     QVector<QPoint> getPoints() const;
     void setPoints(const QVector<QPoint> &value);

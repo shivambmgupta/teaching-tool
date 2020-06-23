@@ -17,19 +17,23 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
     canvas.cpp \
+    logger.cpp \
     main.cpp \
     mainwindow.cpp \
     tmcircle.cpp \
     tmfreehand.cpp \
+    tmgroup.cpp \
     tmline.cpp \
     tmrectangle.cpp \
     tmshape.cpp
 
 HEADERS += \
     canvas.h \
+    logger.h \
     mainwindow.h \
     tmcircle.h \
     tmfreehand.h \
+    tmgroup.h \
     tmline.h \
     tmrectangle.h \
     tmshape.h \
